@@ -12,7 +12,7 @@ import (
 func main() {
 	r := mux.NewRouter()
 	routes.RegisterBookStoreRoutes(r)
-	fmt.Println("Server is listening on port :8000\n")
+	fmt.Println("Server is listening on port :8000")
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe("localhost:8000", r))
 }

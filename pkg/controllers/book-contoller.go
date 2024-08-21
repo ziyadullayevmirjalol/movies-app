@@ -24,8 +24,8 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 
 func GetBookById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	bookId := vars["Id"]
-	Id, err := strconv.ParseInt(bookId, 0, 0)
+	bookId := vars["id"]
+	Id, err := strconv.ParseInt(bookId, 10, 64)
 
 	if err != nil {
 		fmt.Println("Error while parsing")
@@ -53,8 +53,8 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 
 func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	bookId := vars["Id"]
-	Id, err := strconv.ParseInt(bookId, 0, 0)
+	bookId := vars["id"]
+	Id, err := strconv.ParseInt(bookId, 10, 64)
 
 	if err != nil {
 		fmt.Println("Error while parsing")
@@ -73,8 +73,8 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	utils.ParseBody(r, UpdateBook)
 
 	vars := mux.Vars(r)
-	bookId := vars["Id"]
-	Id, err := strconv.ParseInt(bookId, 0, 0)
+	bookId := vars["id"]
+	Id, err := strconv.ParseInt(bookId, 10, 64)
 
 	if err != nil {
 		fmt.Println("Error while parsing")
@@ -92,7 +92,11 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		bookDetails.Publication = UpdateBook.Publication
 	}
 
-	db.Save(&bookDetails)
+	if err := db.Save(&bookDetails).Error; err != nil {
+		http.Error(w, "Failed to update book", http.StatusInternalServerError)
+		return
+	}
+
 	res, _ := json.Marshal(bookDetails)
 
 	w.Header().Set("Content-Type", "application/json")
